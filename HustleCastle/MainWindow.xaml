@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
-        <Button Content="Button" HorizontalAlignment="Left" Height="49" Margin="60,70,0,0" VerticalAlignment="Top" Width="130" Click="Button_Click"/>
+        <Button Content="START" HorizontalAlignment="Left" Height="49" Margin="60,70,0,0" VerticalAlignment="Top" Width="130" Click="Button_Click"/>
         <RichTextBox Name="rtb1"  HorizontalAlignment="Left" Height="198" VerticalAlignment="Top" Width="656" Margin="60,152,0,0">
             <FlowDocument>
                 <Paragraph>
@@ -16,6 +16,7 @@
             </FlowDocument>
         </RichTextBox>
         <Label Content="Label" Name="lbl1" HorizontalAlignment="Left" Margin="432,86,0,0" VerticalAlignment="Top"/>
+        <Button Content="STOP" HorizontalAlignment="Left" Height="49" Margin="238,70,0,0" VerticalAlignment="Top" Width="141"/>
 
     </Grid>
 </Window>

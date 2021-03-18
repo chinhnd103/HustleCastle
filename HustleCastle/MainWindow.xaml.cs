@@ -14,6 +14,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 using KAutoHelper;
 
 namespace HustleCastle
@@ -25,6 +26,7 @@ namespace HustleCastle
     {
         List<string> listDevice = ADBHelper.GetDevices();
         Bitmap D_HOME_MAP = (Bitmap)Bitmap.FromFile("image//dungeon_Tower.jpg");
+        private static readonly DispatcherTimer dt = new DispatcherTimer();
         public MainWindow()
         {
             InitializeComponent();
@@ -33,6 +35,8 @@ namespace HustleCastle
             {
                 MessageBox.Show("No Device!!!!");
             }
+
+            Example.Action();
 
         }
 
@@ -51,7 +55,8 @@ namespace HustleCastle
 
         void CheckImage(string id, Bitmap img)
         {
-            Task l = new Task(() => {
+            Task l = new Task(() =>
+            {
                 while (true)
                 {
                     var screen = KAutoHelper.ADBHelper.ScreenShoot(id);
@@ -66,5 +71,7 @@ namespace HustleCastle
             l.Start();
 
         }
+
+
     }
 }
