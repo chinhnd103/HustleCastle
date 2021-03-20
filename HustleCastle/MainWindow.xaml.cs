@@ -25,8 +25,14 @@ namespace HustleCastle
     public partial class MainWindow : Window
     {
         List<string> listDevice = ADBHelper.GetDevices();
+
         Bitmap D_HOME_MAP = (Bitmap)Bitmap.FromFile("image//dungeon_Tower.jpg");
-        private static readonly DispatcherTimer dt = new DispatcherTimer();
+        Bitmap D_FLAG = (Bitmap)Bitmap.FromFile("image//dungeon_flag.png");
+        Bitmap D_CHECK_ETHER = (Bitmap)Bitmap.FromFile("image//dungeon_Ether.png");
+
+        DispatcherTimer timer = new DispatcherTimer();
+        string id_key = "";
+        string id_mem = "";
         public MainWindow()
         {
             InitializeComponent();
@@ -34,9 +40,11 @@ namespace HustleCastle
             if (listDevice.Count == 0)
             {
                 MessageBox.Show("No Device!!!!");
+                this.Close();
             }
 
-            Example.Action();
+            timer.Interval = TimeSpan.FromMilliseconds(1);
+            timer.Tick += timer_Tick;
 
         }
 
@@ -48,30 +56,53 @@ namespace HustleCastle
         {
             //Task t = new Task(()=> {
             //});
-            CheckImage(listDevice[0], D_HOME_MAP);
+            //Example.CheckImage(listDevice[0], D_HOME_MAP);
 
             //t.Start();
+
+            timer.Start();
         }
 
-        void CheckImage(string id, Bitmap img)
+        void timer_Tick(object sender, EventArgs e)
         {
-            Task l = new Task(() =>
+            try
             {
-                while (true)
+                if (GetPoint(id, D_FLAG) != null)
                 {
-                    var screen = KAutoHelper.ADBHelper.ScreenShoot(id);
-                    var point = KAutoHelper.ImageScanOpenCV.FindOutPoint(screen, img);
-                    if (point != null)
-                    {
-                        Dispatcher.BeginInvoke(new ThreadStart(() => rtb1.AppendText("Home!!!")));
-                        break;
-                    }
-                }
-            });
-            l.Start();
+                    Dispatcher.BeginInvoke(new ThreadStart(() => rtb1.AppendText("FIND!!!\r")));
 
+                }
+                // Tìm kiếm điểm đánh
+
+                if (GetPoint(id, D_FLAG) != null)
+                {
+                    Dispatcher.BeginInvoke(new ThreadStart(() => rtb1.AppendText("FIND!!!\r")));
+
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
         }
 
+        private void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+            timer.Stop();
+        }
 
+        private System.Drawing.Point? GetPoint(string id, Bitmap img)
+        {
+            var screen = ADBHelper.ScreenShoot(listDevice[0], false);
+
+            var point = ImageScanOpenCV.FindOutPoint(screen, D_FLAG);
+            //var aa = ImageScanOpenCV.Find(screen, D_FLAG);
+            //if (aa != null)
+            //{
+            //    aa.Save("aaa.png");
+            //} 
+            return point;
+        }
     }
 }
