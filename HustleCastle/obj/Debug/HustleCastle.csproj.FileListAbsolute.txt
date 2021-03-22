@@ -27,7 +27,6 @@ D:\Source\Github\HustleCastle\HustleCastle\obj\Debug\HustleCastle.pdb
 D:\Source\Github\HustleCastle\HustleCastle\bin\Debug\HustleCastle.exe.config
 D:\Source\Github\HustleCastle\HustleCastle\bin\Debug\HustleCastle.exe
 D:\Source\Github\HustleCastle\HustleCastle\bin\Debug\HustleCastle.pdb
-D:\Source\Github\HustleCastle\HustleCastle\bin\Debug\Emgu.CV.World.xml
 D:\Source\Github\HustleCastle\HustleCastle\obj\Debug\MainWindow.baml
 D:\Source\Github\HustleCastle\HustleCastle\obj\Debug\HustleCastle.g.resources
 D:\Source\Github\HustleCastle\HustleCastle\obj\Debug\HustleCastle.Properties.Resources.resources
