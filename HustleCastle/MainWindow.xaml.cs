@@ -28,10 +28,14 @@ namespace HustleCastle
 
         #region LoadImage
         //private static Bitmap D_ = (Bitmap)Bitmap.FromFile("image//");
+        private static Bitmap GOTO_HOME = (Bitmap)Bitmap.FromFile("image//GOTO_HOME.png");
+        private static Bitmap GOTO_MAP = (Bitmap)Bitmap.FromFile("image//GOTO_MAP.png");
+        private static Bitmap GOTO_DUNGEON = (Bitmap)Bitmap.FromFile("image//MAP_DUNGEON.png");
         private static Bitmap D_HOME_MAP = (Bitmap)Bitmap.FromFile("image//dungeon_Tower.jpg");
         private static Bitmap D_FLAG = (Bitmap)Bitmap.FromFile("image//dungeon_flag.png");
         private static Bitmap D_FLAG_BIG = (Bitmap)Bitmap.FromFile("image//dungeon_flag_big.png");
         private static Bitmap D_FLAG_BIG2 = (Bitmap)Bitmap.FromFile("image//dungeon_flag_big2.png");
+        private static Bitmap D_FLAG_BIG3 = (Bitmap)Bitmap.FromFile("image//dungeon_flag_big3.png");
         private static Bitmap D_FLAG_BOSS = (Bitmap)Bitmap.FromFile("image//dungeon_flag_boss.png");
         private static Bitmap D_FLAG_BOSS1 = (Bitmap)Bitmap.FromFile("image//dungeon_flag_boss1.png");
         private static Bitmap D_CHECK_ETHER = (Bitmap)Bitmap.FromFile("image//dungeon_Ether.png");
@@ -40,7 +44,6 @@ namespace HustleCastle
         private static Bitmap D_READY = (Bitmap)Bitmap.FromFile("image//dungeon_ready.png");
         private static Bitmap D_CANCEL = (Bitmap)Bitmap.FromFile("image//dungeon_cancel.jpg");
         private static Bitmap D_TO_BATTLE = (Bitmap)Bitmap.FromFile("image//dungeon_start_battle.png");
-        private static Bitmap D_START_BATTLE_NON_LEADER = (Bitmap)Bitmap.FromFile("image//dungeon_start_battle_non_leader.png");
         private static Bitmap D_STARTED_BATTLE = (Bitmap)Bitmap.FromFile("image//dungeon_started_battle.png");
         private static Bitmap D_X = (Bitmap)Bitmap.FromFile("image//dungeon_x.png");
         private static Bitmap D_HOME = (Bitmap)Bitmap.FromFile("image//dungeon_home_finish_battle.jpg");
@@ -61,7 +64,10 @@ namespace HustleCastle
         DispatcherTimer timer2 = new DispatcherTimer();
         string ID1 = "";
         string ID2 = "";
+        static string IDKey = "";
         private static string logs = "";
+
+        static int step = 2;
         public MainWindow()
         {
             InitializeComponent();
@@ -128,269 +134,348 @@ namespace HustleCastle
                 return;
             }
 
-            int step = 1;
-
             while (true)
             {
-                switch (step)
+                if (step == -1)
                 {
-                    case 0:
-                        break;
-                    case 1:
-
-                        break;
-                    case 2:
-                        break;
-                    default:
-                        break;
-                }
-
-                // find flag normal
-                logs += "GO->" + ID + "\r";
-
-                Bitmap tmp_img = (Bitmap)D_HOME_MAP.Clone();
-                var p = GetPoint(ID, tmp_img);
-                if (p != null)
-                {
-                    tmp_img = (Bitmap)D_FLAG.Clone();
-                    p = GetPoint(ID, tmp_img);
-                    if (p != null)
+                    var img = (Bitmap)GOTO_MAP.Clone();
+                    var _p = GetPoint(ID, img);
+                    if (_p != null)
                     {
-                        logs += ID + ": find FLAG" + "\r";
-                        ADBHelper.Tap(ID, p.Value.X, p.Value.Y);
-                        p = null;
-
-                        // click tab Your squad
-                        ADBHelper.Tap(ID, 671, 39);
+                        ADBHelper.Tap(ID, _p.Value.X, _p.Value.Y);
+                        _p = null;
                         Thread.Sleep(500);
                     }
                     else
                     {
-                        tmp_img = (Bitmap)D_FLAG_BIG.Clone();
-                        p = GetPoint(ID, tmp_img);
+                        img = (Bitmap)GOTO_HOME.Clone();
+                        _p = GetPoint(ID, img);
+                        if (_p != null)
+                        {
+                            img = (Bitmap)GOTO_DUNGEON.Clone();
+                            _p = GetPoint(ID, img);
+                            if (_p != null)
+                            {
+                                step = 0;
+                                ADBHelper.Tap(ID, _p.Value.X, _p.Value.Y);
+                                _p = null;
+                                Thread.Sleep(500);
+                            }
+                        }
+                    }
+                }
+
+                System.Drawing.Point? p;
+
+                switch (step)
+                {
+                    case 0:
+                        break;
+                    case 1: // Start Dungeon
+                        #region Start Dungeon
+                        p = GetPoint(ID, (Bitmap)D_GOTO_THE_MAP.Clone());
+                        Console.WriteLine("[" + ID + "] STEP " + step);
                         if (p != null)
                         {
-                            logs += ID + ": find FLAG" + "\r";
+                            step = 2;
                             ADBHelper.Tap(ID, p.Value.X, p.Value.Y);
                             p = null;
-
-                            // click tab Your squad
-                            ADBHelper.Tap(ID, 671, 39);
-                            Thread.Sleep(500);
                         }
-                        else
+                        break;
+                    #endregion
+                    case 2: // Choose FLAG
+                        #region Chọn ải
+                        // Check xem co phan thuong tu ai truoc hay khong?
+                        p = GetPoint(ID, (Bitmap)D_REWARD_CLOSE.Clone());
+                        if (p != null)
                         {
-                            tmp_img = (Bitmap)D_FLAG_BIG2.Clone();
-                            p = GetPoint(ID, tmp_img);
+                            ADBHelper.Tap(ID, p.Value.X, p.Value.Y);
+                            p = null;
+                        }
+
+                        //Flag Normal
+                        p = GetPoint(ID, (Bitmap)D_HOME_MAP.Clone());
+                        Console.WriteLine("[" + ID + "] STEP " + step);
+                        if (p != null)
+                        {
+                            p = GetPoint(ID, (Bitmap)D_FLAG.Clone());
                             if (p != null)
                             {
-                                logs += ID + ": find FLAG" + "\r";
+                                step = 3;
                                 ADBHelper.Tap(ID, p.Value.X, p.Value.Y);
                                 p = null;
 
                                 // click tab Your squad
                                 ADBHelper.Tap(ID, 671, 39);
-                                Thread.Sleep(500);
+                                break;
+                            }
+                            else
+                            {
+                                p = GetPoint(ID, (Bitmap)D_FLAG_BIG.Clone());
+                                if (p != null)
+                                {
+                                    step = 3;
+                                    ADBHelper.Tap(ID, p.Value.X, p.Value.Y);
+                                    p = null;
+
+                                    // click tab Your squad
+                                    ADBHelper.Tap(ID, 671, 39);
+                                    break;
+                                }
+                                else
+                                {
+                                    p = GetPoint(ID, (Bitmap)D_FLAG_BIG2.Clone());
+                                    if (p != null)
+                                    {
+                                        step = 3;
+                                        ADBHelper.Tap(ID, p.Value.X, p.Value.Y);
+                                        p = null;
+
+                                        // click tab Your squad
+                                        ADBHelper.Tap(ID, 671, 39);
+                                        break;
+                                    }
+                                    else
+                                    {
+                                        p = GetPoint(ID, (Bitmap)D_FLAG_BIG3.Clone());
+                                        if (p != null)
+                                        {
+                                            step = 3;
+                                            ADBHelper.Tap(ID, p.Value.X, p.Value.Y);
+                                            p = null;
+
+                                            // click tab Your squad
+                                            ADBHelper.Tap(ID, 671, 39);
+                                            break;
+                                        }
+
+                                    }
+
+                                }
                             }
 
+                            // Flag Boss
+                            p = GetPoint(ID, (Bitmap)D_FLAG_BOSS.Clone());
+                            if (p != null)
+                            {
+                                step = 3;
+                                ADBHelper.Tap(ID, p.Value.X, p.Value.Y);
+                                p = null;
+
+                                // click tab Your squad
+                                ADBHelper.Tap(ID, 671, 39);
+                                break;
+                            }
+                            else
+                            {
+                                p = GetPoint(ID, (Bitmap)D_FLAG_BOSS1.Clone());
+                                if (p != null)
+                                {
+                                    step = 3;
+                                    ADBHelper.Tap(ID, p.Value.X, p.Value.Y);
+                                    p = null;
+
+                                    // click tab Your squad
+                                    ADBHelper.Tap(ID, 671, 39);
+                                    break;
+                                }
+                            }
+                            //tmp_img = (Bitmap)D_FLAG_COMBAT.Clone();
+                            //p = GetPoint(ID, tmp_img);
+                            //if (p != null)
+                            //{
+
+                            //    ADBHelper.Tap(ID, p.Value.X, p.Value.Y);
+                            //    p = null;
+                            //    Thread.Sleep(500);
+                            //}
                         }
-                    }
-                }
-
-                // find flag boss
-                tmp_img = (Bitmap)D_FLAG_BOSS.Clone();
-                p = GetPoint(ID, tmp_img);
-                if (p != null)
-                {
-                    logs += ID + ": find FLAG" + "\r";
-                    ADBHelper.Tap(ID, p.Value.X, p.Value.Y);
-                    p = null;
-
-                    // click tab Your squad
-                    ADBHelper.Tap(ID, 671, 39);
-                    Thread.Sleep(500);
-                }
-
-                tmp_img = (Bitmap)D_GO_HERE.Clone();
-                p = GetPoint(ID, tmp_img);
-                if (p != null)
-                {
-                    logs += ID + ": find FLAG" + "\r";
-                    ADBHelper.Tap(ID, p.Value.X, p.Value.Y);
-                    p = null;
-                    Thread.Sleep(500);
-                }
-
-                tmp_img = (Bitmap)D_ADD_FIGHTER.Clone();
-                var tmp_img1 = (Bitmap)D_READY.Clone();
-                var tmp_img2 = (Bitmap)D_CANCEL.Clone();
-                p = GetPoint(ID, tmp_img);
-                var p1 = GetPoint(ID, tmp_img1);
-                var p2 = GetPoint(ID, tmp_img2);
-                if (p != null && p2 == null)
-                {
-                    logs += ID + ": find FLAG" + "\r";
-                    while (true)
-                    {
-                        ADBHelper.Swipe(ID, 236, 354, 813, 164, 2000);
-                        ADBHelper.Swipe(ID, 252, 354, 813, 164, 2000);
-                        ADBHelper.Swipe(ID, 298, 354, 813, 164, 2000);
-                        ADBHelper.Swipe(ID, 340, 354, 813, 164, 5000);
-                        ADBHelper.Swipe(ID, 393, 354, 813, 164, 5000);
-                        ADBHelper.Swipe(ID, 435, 354, 813, 164, 5000);
-                        p = GetPoint(ID, tmp_img);
-                        Thread.Sleep(200);
-                        if (p == null)
+                        #endregion
+                        break;
+                    case 3: // Click "GO HERE" -> Set Leader
+                        #region Click "GO HERE" -> Set Leader
+                        if (IDKey != "")
                         {
-                            p = null;
+                            step = 4;
                             break;
                         }
-                    }
-                }
 
-                tmp_img = (Bitmap)D_ADD_FIGHTER.Clone();
-                p = GetPoint(ID, tmp_img);
-                if (p == null && p1 != null)
-                {
-                    logs += ID + ": find FLAG" + "\r";
-                    ADBHelper.Tap(ID, p1.Value.X, p1.Value.Y);
-                    p1 = null;
-                    Thread.Sleep(500);
-                }
+                        p = GetPoint(ID, (Bitmap)D_GO_HERE.Clone());
+                        Console.WriteLine("[" + ID + "] STEP " + step);
+                        if (p != null)
+                        {
+                            Console.WriteLine("[" + ID + "] STEP " + step + "---->KEY");
+                            IDKey = ID;
+                            ADBHelper.Tap(ID, 766, 456);
+                            p = null;
+                            Thread.Sleep(500);
+                        }
+                        else
+                        {
+                            IDKey = "";
+                        }
+                        step = 4;
+                        #endregion
+                        break;
+                    case 4: // Deploy fighter
+                        #region Deploy fighter
+                        Console.WriteLine("[" + ID + "] STEP " + step);
+                        p = GetPoint(ID, (Bitmap)D_ADD_FIGHTER.Clone());
+                        var p2 = GetPoint(ID, (Bitmap)D_CANCEL.Clone());
 
-                tmp_img = (Bitmap)D_TO_BATTLE.Clone();
-                p = GetPoint(ID, tmp_img);
-                if (p != null && p2 != null)
-                {
-                    logs += ID + ": find FLAG" + "\r";
-                    ADBHelper.Tap(ID, p.Value.X, p.Value.Y);
-                    p = null;
-                }
+                        if (p != null && p2 == null)
+                        {
+                            while (true)
+                            {
+                                ADBHelper.Swipe(ID, 236, 354, 813, 164, 2000);
+                                ADBHelper.Swipe(ID, 252, 354, 813, 164, 2000);
+                                ADBHelper.Swipe(ID, 298, 354, 813, 164, 2000);
+                                ADBHelper.Swipe(ID, 340, 354, 813, 164, 5000);
+                                ADBHelper.Swipe(ID, 393, 354, 813, 164, 5000);
+                                ADBHelper.Swipe(ID, 435, 354, 813, 164, 5000);
 
-                tmp_img = (Bitmap)D_START_BATTLE_NON_LEADER.Clone();
-                p = GetPoint(ID, tmp_img);
-                var tmp_img_x = (Bitmap)D_X.Clone();
-                var p_x = GetPoint(ID, tmp_img_x);
-                if (p != null && p2 != null)
-                {
-                    logs += ID + ": find FLAG" + "\r";
-                    ADBHelper.Tap(ID, p_x.Value.X, p_x.Value.Y);
-                    p = null;
-                }
+                                p = GetPoint(ID, (Bitmap)D_ADD_FIGHTER.Clone());
+                                Thread.Sleep(200);
+                                if (p == null)
+                                {
+                                    p = null;
+                                    break;
+                                }
+                            }
+                        }
 
-                tmp_img = (Bitmap)D_HOME.Clone();
-                p = GetPoint(ID, tmp_img);
-                if (p != null)
-                {
-                    logs += ID + ": find FLAG" + "\r";
-                    ADBHelper.Tap(ID, p.Value.X, p.Value.Y);
-                    p = null;
-                }
+                        p = GetPoint(ID, (Bitmap)D_ADD_FIGHTER.Clone());
+                        var p1 = GetPoint(ID, (Bitmap)D_READY.Clone());
+                        if (p == null && p1 != null)
+                        {
 
-                tmp_img = (Bitmap)D_END_JOURNEY.Clone();
-                p = GetPoint(ID, tmp_img);
-                if (p != null)
-                {
-                    logs += ID + ": find FLAG" + "\r";
-                    ADBHelper.Tap(ID, p.Value.X, p.Value.Y);
-                    p = null;
-                    Thread.Sleep(1000);
-                    ADBHelper.Tap(ID, 391, 345);
-                }
+                            ADBHelper.Tap(ID, p1.Value.X, p1.Value.Y);
+                            p1 = null;
+                            Thread.Sleep(1000);
+                        }
 
-                tmp_img = (Bitmap)D_SUMMARY.Clone();
-                p = GetPoint(ID, tmp_img);
-                if (p != null)
-                {
-                    logs += ID + ": find FLAG" + "\r";
-                    ADBHelper.Tap(ID, p.Value.X, p.Value.Y, 10);
-                    p = null;
-                    Thread.Sleep(2000);
-                }
-
-                tmp_img = (Bitmap)D_INVITE.Clone();
-                p = GetPoint(ID, tmp_img);
-                if (p != null)
-                {
-                    logs += ID + ": find FLAG" + "\r";
-                    ADBHelper.Tap(ID, p.Value.X, p.Value.Y);
-                    p = null;
-                }
-
-                tmp_img = (Bitmap)D_START_JOURNEY.Clone();
-                p = GetPoint(ID, tmp_img);
-                if (p != null)
-                {
-                    logs += ID + ": find FLAG" + "\r";
-                    ADBHelper.Tap(ID, p.Value.X, p.Value.Y);
-                    p = null;
-                }
-
-                tmp_img = (Bitmap)D_ACCEPT_TORCHES.Clone();
-                p = GetPoint(ID, tmp_img);
-                if (p != null)
-                {
-                    logs += ID + ": find FLAG" + "\r";
-                    ADBHelper.Tap(ID, p.Value.X, p.Value.Y);
-                    p = null;
-                    Thread.Sleep(500);
-                }
-
-                tmp_img = (Bitmap)D_CONFIRM_FIGHTER.Clone();
-                p = GetPoint(ID, tmp_img);
-                if (p != null)
-                {
-                    logs += ID + ": find FLAG" + "\r";
-                    ADBHelper.Tap(ID, p.Value.X, p.Value.Y);
-                    p = null;
-                    Thread.Sleep(500);
-                }
-
-                tmp_img = (Bitmap)D_GOTO_THE_MAP.Clone();
-                p = GetPoint(ID, tmp_img);
-                if (p != null)
-                {
-                    logs += ID + ": find FLAG" + "\r";
-                    ADBHelper.Tap(ID, p.Value.X, p.Value.Y);
-                    p = null;
-                    Thread.Sleep(500);
-                }
-
-                tmp_img = (Bitmap)D_REWARD_CLOSE.Clone();
-                p = GetPoint(ID, tmp_img);
-                if (p != null)
-                {
-                    logs += ID + ": find FLAG" + "\r";
-                    ADBHelper.Tap(ID, p.Value.X, p.Value.Y);
-                    p = null;
-                    Thread.Sleep(500);
-                }
-
-                tmp_img = (Bitmap)D_FLAG_COMBAT.Clone();
-                p = GetPoint(ID, tmp_img);
-                if (p != null)
-                {
-                    logs += ID + ": find FLAG" + "\r";
-                    ADBHelper.Tap(ID, p.Value.X, p.Value.Y);
-                    p = null;
-                    Thread.Sleep(500);
-                }
-
-                tmp_img = (Bitmap)D_FLAG_BOSS1.Clone();
-                p = GetPoint(ID, tmp_img);
-                if (p != null)
-                {
-                    logs += ID + ": find FLAG" + "\r";
-                    ADBHelper.Tap(ID, p.Value.X, p.Value.Y);
-                    p = null;
-                    Thread.Sleep(500);
+                        // Sau khi deploy xong
+                        // Key -> start battal
+                        // NoKey -> quay ra map
+                        p = GetPoint(ID, (Bitmap)D_TO_BATTLE.Clone());
+                        if (p != null && p2 != null)
+                        {
+                            step = 5;
+                            ADBHelper.Tap(ID, 766, 456);
+                            p = null;
+                        }
+                        else
+                        {
+                            p = GetPoint(ID, (Bitmap)D_X.Clone());
+                            if (p != null)
+                            {
+                                step = 2;
+                                ADBHelper.Tap(ID, p.Value.X, p.Value.Y);
+                                p = null;
+                            }
+                        }
+                        #endregion
+                        break;
+                    case 5: // Sau khi xong combat thi quay lai map dungeon
+                        #region Sau khi xong combat thi quay lai map dungeon
+                        p = GetPoint(ID, (Bitmap)D_HOME.Clone());
+                        Console.WriteLine("[" + ID + "] STEP " + step);
+                        if (p != null)
+                        {
+                            step = 2;
+                            ADBHelper.Tap(ID, p.Value.X, p.Value.Y);
+                            p = null;
+                        }
+                        #endregion
+                        break;
+                    case 6: // Khi het Flag thi end dungeon
+                        #region Khi het Flag thi end dungeon
+                        p = GetPoint(ID, (Bitmap)D_END_JOURNEY.Clone());
+                        Console.WriteLine("[" + ID + "] STEP " + step);
+                        if (p != null)
+                        {
+                            step = 7;
+                            ADBHelper.Tap(ID, p.Value.X, p.Value.Y);
+                            p = null;
+                            Thread.Sleep(1000);
+                            ADBHelper.Tap(ID, 391, 345); // Click popup question
+                        }
+                        #endregion
+                        break;
+                    case 7: // Tổng kết
+                        #region Tổng kết phần thưởng dungeon
+                        p = GetPoint(ID, (Bitmap)D_SUMMARY.Clone());
+                        Console.WriteLine("[" + ID + "] STEP " + step);
+                        if (p != null)
+                        {
+                            step = 8;
+                            ADBHelper.Tap(ID, p.Value.X, p.Value.Y, 10);
+                            p = null;
+                            Thread.Sleep(1000);
+                        }
+                        #endregion
+                        break;
+                    case 8: // Re-invite friend
+                        #region Re-invite friend
+                        p = GetPoint(ID, (Bitmap)D_INVITE.Clone());
+                        Console.WriteLine("[" + ID + "] STEP " + step);
+                        if (p != null)
+                        {
+                            step = 9;
+                            ADBHelper.Tap(ID, p.Value.X, p.Value.Y);
+                            p = null;
+                            Thread.Sleep(1000);
+                        }
+                        #endregion
+                        break;
+                    case 9: // Hai ben cung chon thi bat dau dungeon moi
+                        #region Hai ben cung chon thi bat dau dungeon moi
+                        p = GetPoint(ID, (Bitmap)D_START_JOURNEY.Clone());
+                        Console.WriteLine("[" + ID + "] STEP " + step);
+                        if (p != null)
+                        {
+                            step = 10;
+                            ADBHelper.Tap(ID, p.Value.X, p.Value.Y);
+                            p = null;
+                        }
+                        #endregion
+                        break;
+                    case 10: // Chon ve' vao dungeon
+                        #region Chon ve' vao dungeon
+                        p = GetPoint(ID, (Bitmap)D_ACCEPT_TORCHES.Clone());
+                        Console.WriteLine("[" + ID + "] STEP " + step);
+                        if (p != null)
+                        {
+                            step = 11;
+                            ADBHelper.Tap(ID, p.Value.X, p.Value.Y);
+                            p = null;
+                            Thread.Sleep(500);
+                        }
+                        #endregion
+                        break;
+                    case 11: // xac nhan doi hinh vao dungeon
+                        #region xac nhan doi hinh vao dungeon
+                        p = GetPoint(ID, (Bitmap)D_CONFIRM_FIGHTER.Clone());
+                        Console.WriteLine("[" + ID + "] STEP " + step);
+                        if (p != null)
+                        {
+                            step = 2;
+                            ADBHelper.Tap(ID, p.Value.X, p.Value.Y);
+                            p = null;
+                            Thread.Sleep(17000);
+                        }
+                        #endregion
+                        break;
+                    default:
+                        break;
                 }
             }
         }
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
-            this.Close();
+            step = 2;
+            IDKey = "";
         }
 
         private static System.Drawing.Point? GetPoint(string id, Bitmap img)
@@ -399,7 +484,6 @@ namespace HustleCastle
             Bitmap tmp_img = (Bitmap)img.Clone();
             Bitmap tmp_scr = (Bitmap)screen.Clone();
             var point = ImageScanOpenCV.FindOutPoint(tmp_scr, tmp_img);
-
             return point;
             //var aa = ImageScanOpenCV.Find(screen, D_FLAG);
             //if (aa != null)
