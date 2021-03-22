@@ -116,26 +116,9 @@ namespace HustleCastle
 
         void timer1_Tick(object sender, EventArgs e)
         {
-            try
-            {
-            }
-            catch (Exception)
-            {
-
-                throw;
-            }
         }
         void timer2_Tick(object sender, EventArgs e)
         {
-            try
-            {
-
-            }
-            catch (Exception)
-            {
-
-                throw;
-            }
         }
 
         static void RunDungeon(string ID)
@@ -145,8 +128,23 @@ namespace HustleCastle
                 return;
             }
 
+            int step = 1;
+
             while (true)
             {
+                switch (step)
+                {
+                    case 0:
+                        break;
+                    case 1:
+
+                        break;
+                    case 2:
+                        break;
+                    default:
+                        break;
+                }
+
                 // find flag normal
                 logs += "GO->" + ID + "\r";
 
@@ -392,8 +390,6 @@ namespace HustleCastle
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
-            timer1.Stop();
-            timer2.Stop();
             this.Close();
         }
 
@@ -403,17 +399,13 @@ namespace HustleCastle
             Bitmap tmp_img = (Bitmap)img.Clone();
             Bitmap tmp_scr = (Bitmap)screen.Clone();
             var point = ImageScanOpenCV.FindOutPoint(tmp_scr, tmp_img);
+
+            return point;
             //var aa = ImageScanOpenCV.Find(screen, D_FLAG);
             //if (aa != null)
             //{
             //    aa.Save("aaa.png");
             //} 
-            return point;
-        }
-
-        private static void GoPoint(string ID, System.Drawing.Point? p)
-        {
-            ADBHelper.Tap(ID, p.Value.X, p.Value.Y);
         }
     }
 }
